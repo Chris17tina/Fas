@@ -1,0 +1,129 @@
+using System;
+ using System.Collections.Generic;
+ using System.Linq;
+ using System.Text;
+ using System.Threading.Tasks;
+ using System.Windows;
+namespace MyStack
+{
+    class Stack
+    {
+        private float[] items; // элементы стека
+        private int count;  // количество элементов
+        const int n = 10;   // количество элементов в массиве по умолчанию
+        public Stack()
+        {
+            items = new float[n];
+        }
+        public Stack(int length)
+        {
+            items = new float[length];
+        }
+
+        public bool IsEmpty // пуст ли стек
+        {
+            get { return count == 0; }
+        }
+
+        public int Count // размер стека
+        {
+            get { return count; }
+        }
+
+        public void Push(ref float item) // добвление элемента
+        {
+            // если стек заполнен, выбрасываем исключение
+            if (count == items.Length)
+                throw new InvalidOperationException("Переполнение стека");
+            items[count++] = item;
+        }
+        // извлечение элемента
+        public float Pop()
+        {
+            // если стек пуст, выбрасываем исключение
+            if (IsEmpty)
+                throw new InvalidOperationException("Стек пуст");
+            float item = items[--count];
+            items[count] = default(float); // сбрасываем ссылку
+            return item;
+        }
+        // возвращаем элемент из верхушки стека
+        public float Peek()
+        {
+            return items[count - 1];
+        }
+        // существует ли отрицательный элемент
+        public bool isNegative()
+        {
+            for (int i = 0; i < count; i++)
+            {
+                if (items[i] < 0) return true;
+            }
+            return false;
+        }
+        public float getMinValue()
+        {
+            if (count <= 0) throw new InvalidOperationException("Стек пуст");
+            float fMin = items[0];
+            for (int i = 1; i < count; i++)
+            {
+                if (fMin > items[i]) fMin = items[i];
+            }
+            return fMin;
+        }
+        public float getMaxValue()
+        {
+            if (count <= 0) throw new InvalidOperationException("Стек пуст");
+            float fMax = items[0];
+            for (int i = 1; i < count; i++)
+            {
+                if (fMax < items[i]) fMax = items[i];
+            }
+            return fMax;
+        }
+        public float GetValue(int n)
+        {
+            if (n > -1 && n < count) return items[n];
+            throw new InvalidOperationException("Не существует");
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // массив, который хранит значения количества элементов в каждом стеке
+            int[] b = { 3, 3, 2, 7, 10, 8 };
+            // инициализация массива стеков
+            Stack[] ar = { new Stack(b[0]), new Stack(b[1]), new Stack(b[2]), new Stack(b[3]), new Stack(b[4]), new Stack(b[5]) };
+            Console.WriteLine("\nСтеки: ");
+            for (int i = 0; i < 6; i++)
+            {
+                Console.Write("ar[{0}]: ", i);
+                for (int j = 0; j < b[i]; j++)
+                {
+                    // тернарный оператор, каждый четный массив по условию оператора получает отрицательные элементы
+                    float tt =((i % 2 == 0 && j % 2 == 1) ? (-1) : (1)) *(i + j) * 0.015f;
+                    ar[i].Push(ref tt);
+                    Console.Write("'{0}'; ", ar[i].GetValue(j));
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine("\nСписок стеков с отрицательными элементами: ");
+            for (int i = 0; i < 6; i++)
+            {
+                if (ar[i].isNegative())
+                {
+                    Console.Write("ar[{0}]: ", i);
+                    for (int j = 0; j < b[i]; j++)
+                    {
+                        Console.Write("'{0}'; ", ar[i].GetValue(j));
+                    }
+                    Console.WriteLine();
+                }
+            }
+            Console.ReadLine();
+        }
+    }
+    
+}
