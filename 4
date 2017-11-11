@@ -1,0 +1,365 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Laba4
+{
+    public class Owner
+    {
+        public const string myName = "Kristina";
+        public const string myOrg = "BSTU";
+        public const string myId = "8121998";
+    }
+
+    public class Matrix
+    {
+        public double[,] data;//двумерный массив
+
+        private int lenX;//поле
+        public int LenX
+        {
+            get
+            {
+                return lenX;
+            }
+        }
+
+        private int lenY;
+        public int LenY
+        {
+            get
+            {
+                return lenY;
+            }
+        }
+
+        //constructors
+        public Matrix() { }
+        public Matrix(double[,] _mtrx, int lenX, int lenY)
+        {
+            this.lenY = lenY;
+            this.lenX = lenX;
+            data = new double[lenX, lenY];
+            data = _mtrx;
+        }
+        public Matrix(int lenX, int lenY)
+        {
+            this.lenY = lenY;
+            this.lenX = lenX;
+            data = new double[lenX, lenY];
+        }
+
+        //methods
+
+        public void Output()
+        {
+            Console.WriteLine("\nВывод матрицы:");
+            for (int i = 0; i < lenX; i++)
+            {
+                for (int j = 0; j < lenY; j++)
+                {
+                    Console.Write(data[i, j] + "  ");
+                }
+                Console.Write("\n");
+            }
+        }
+        public void Input()
+        {
+            Console.WriteLine("Заполнение матрицы:");
+            for (int i = 0; i < lenX; i++)
+            {
+                for (int j = 0; j < lenY; j++)
+                {
+                    Console.Write("Введите элемент " + i + " строки " + j + " столбца матрицы:");
+                    data[i, j] = Convert.ToInt32(Console.ReadLine());//конвертировать в цифры
+                }
+            }
+        }
+        public double DetGauss()//метод
+        {
+            double det = 1; // Хранит определитель, который вернёт функция
+            int n = LenX; // Размерность матрицы
+            int k = 0;
+            const double E = 1E-9; // Погрешность вычислений
+
+            for (int i = 0; i < n; i++)
+            {
+                k = i;
+                for (int j = i + 1; j < n; j++)
+                    if (Math.Abs(data[j, i]) > Math.Abs(data[k, i]))
+                        k = j;
+
+                if (Math.Abs(data[k, i]) < E)
+                {
+                    det = 0;
+                    break;
+                }
+
+                double s = 0;
+
+                for (int t = 0; t < LenX; t++)
+                {
+                    s = data[i, t];
+                    data[i, t] = data[k, t];
+                    data[k, t] = s;
+                }
+
+
+                if (i != k) det *= -1;
+
+                det *= data[i, i];
+
+                for (int j = i + 1; j < n; j++)
+                    data[i, j] /= data[i, i];
+
+                for (int j = 0; j < n; j++)
+                    if ((j != i) && (Math.Abs(data[j, i]) > E))
+                        for (k = i + 1; k < n; k++)
+                            data[j, k] -= data[i, k] * data[j, i];
+            }
+            return det;
+        }
+
+
+        //override
+
+        public static Matrix operator -(Matrix A, int tmp)//перегрузка
+        {
+            Matrix B = new Matrix(A.lenX, A.lenY);
+            for (int i = 0; i < B.lenX; i++)
+            {
+                for (int j = 0; j < B.lenY; j++)
+                {
+                    B.data[i, j] = A.data[i, j] - tmp;
+                }
+            }
+            return B;
+        }
+        public static Matrix operator ++(Matrix A)//перегрузка
+        {
+            Matrix B = new Matrix(A.lenX, A.lenY);
+            for (int i = 0; i < B.lenX; i++)
+            {
+                for (int j = 0; j < B.lenY; j++)
+                {
+                    B.data[i, j] = A.data[i, j]++;
+                }
+            }
+            return B;
+        }
+        public static Matrix operator +(Matrix A, Matrix B)
+        {
+            Matrix C = new Matrix(A.LenX, A.LenY);
+            for (int i = 0; i < C.lenX; i++)
+            {
+                for (int j = 0; j < C.lenY; j++)
+                {
+                    C.data[i, j] = A.data[i, j] + B.data[i, j];
+                }
+            }
+            return C;
+        }
+        public static Matrix operator --(Matrix A)
+        {
+            Matrix B = new Matrix(A.lenX, A.lenY);
+            for (int i = 0; i < B.lenX; i++)
+            {
+                for (int j = 0; j < B.lenY; j++)
+                {
+                    B.data[i, j] = A.data[i, j]--;
+                }
+            }
+            return B;
+        }
+        public static bool operator !=(Matrix A, Matrix B)
+        {
+            if (A.DetGauss() != B.DetGauss())
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        public static bool operator ==(Matrix A, Matrix B)
+        {
+            if (A.DetGauss() != B.DetGauss())//методы обектов
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        public static implicit operator int(Matrix A)//явное преобразование int в matrix
+        {
+            int count = 0;
+            for (int i = 0; i < A.lenX; i++)
+            {
+                for (int j = 0; j < A.lenY; j++)
+                {
+                    if (A.data[i, j] == 0)
+                    {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
+
+
+        //nested
+        Owner Krisrina;
+
+        public class Date
+        {
+            public string _date;
+            public Date()
+            {
+                DateTime tmp = DateTime.Now;// в tmp записывает дату
+                _date = Convert.ToString(tmp);
+            }
+        }
+
+    }
+
+    public static class MathObject
+    {
+        public static void AllToZero(Matrix A)//всё обнавить 
+        {
+            for (int i = 0; i < A.LenX; i++)
+            {
+                for (int j = 0; j < A.LenY; j++)
+                {
+                    A.data[i, j] = 0;
+                }
+            }
+        }
+
+        public static double Max(Matrix A)//максимальный элемент в матрице
+        {
+            double max = 0;
+
+            for (int i = 0; i < A.LenX; i++)
+            {
+                for (int j = 0; j < A.LenY; j++)
+                {
+                    if (A.data[i, j] > max)
+                    {
+                        max = A.data[i, j];
+                    }
+                }
+            }
+            return max;
+        }
+
+        public static double Min(Matrix A)
+        {
+            double min = 99999999;
+
+            for (int i = 0; i < A.LenX; i++)
+            {
+                for (int j = 0; j < A.LenY; j++)
+                {
+                    if (A.data[i, j] < min)
+                    {
+                        min = A.data[i, j];
+                    }
+                }
+            }
+            return min;
+        }
+
+        public static int IntSum(this string str)
+        {
+            string[] str_2 = str.Split(',');
+            int sum = 0;
+            foreach (string str_ in str_2)
+            {
+                string temp = "";
+                foreach (char c in str_)
+                {
+                    if (c == '.')
+                    {
+                        temp += ',';
+                    }
+                    else
+                    {
+                        temp += c;
+                    }
+                }
+                float tmp = float.Parse(temp);
+                if ((int)tmp == tmp)
+                {
+                    sum += (int)tmp;
+                }
+
+
+            }
+            return sum;
+        }
+
+        public static bool AreSqr(this Matrix mtrx)
+        {
+            if (mtrx.LenX == mtrx.LenY)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Matrix Matrix_1 = new Matrix(new double[,] { { 1, 2 }, { 2, 0 } }, 2, 2); //det = -4
+
+            Matrix Matrix_2 = new Matrix(new double[,] { { 3, 2 }, { 4, 5 } }, 2, 2); //det = 7
+
+
+            Matrix_1.Output();
+            Matrix_2.Output();
+
+            //вычитание числа из матрицы
+            int tmp = 4;
+            Matrix Matrix_sub = Matrix_1 - tmp;
+            Matrix_sub.Output();
+
+            //инкремент матрицы
+            Matrix Matrix_inc = Matrix_1++;
+            Matrix_inc.Output();
+
+            //сравнение матриц по модулю
+            Console.WriteLine("\nРавны ли матрицы по модулю? " + (Matrix_1 == Matrix_2));
+
+            //Вложенный обьект
+            Matrix.Date data = new Matrix.Date();
+            Console.WriteLine("Время создания Date: " + data._date);
+
+            //минимальный и максимальный
+            Console.WriteLine("Минимальный элемент матрицы 1: " + MathObject.Min(Matrix_1) + "\nМаксимальный: " + MathObject.Max(Matrix_1));
+
+            //обнуление
+            MathObject.AllToZero(Matrix_1);
+            Matrix_1.Output();
+
+            //сумма целых в строке
+            string str = "2,2.3,3,2.44444,1";
+            Console.WriteLine("\nСумма целых чисел в строке: " + str + " равна " + str.IntSum());
+
+            //проверка на квадратность
+
+            Console.WriteLine("\nЯвляется ли матрица Matrix_1 квадратной? - " + Matrix_1.AreSqr());
+            Console.ReadKey();
+        }
+    }
+}
